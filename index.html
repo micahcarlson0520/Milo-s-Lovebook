@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Milo’s Lovebook 🐾</title>
+<meta name="description" content="A private PWA to collect Milo memories, track health, and get pug-perfect ideas.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f1115">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" sizes="192x192" href="icons/icon-192.png">
+<style>
+  :root{--bg:#0f1115;--panel:#161a22;--muted:#8b94a7;--text:#eaf2ff;--accent:#f4a261;--accent-2:#2a9d8f;--danger:#ef476f;--ok:#06d6a0;--ring:0 0 0 .25rem rgba(244,162,97,.25);--radius:14px;}
+  *{box-sizing:border-box}html,body{height:100%}
+  body{margin:0;font-family:ui-rounded,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;color:var(--text);background:radial-gradient(1200px 800px at 20% -20%,#1a1f2b 10%,#0f1115 55%);}
+  header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,rgba(15,17,21,.9),rgba(15,17,21,.65));backdrop-filter:saturate(140%) blur(8px);border-bottom:1px solid #1d2330;}
+  .wrap{max-width:1100px;margin:0 auto;padding:16px}.brand{display:flex;gap:12px;align-items:center}
+  .brand .logo{width:40px;height:40px;border-radius:10px;box-shadow:0 6px 20px rgba(244,162,97,.25)}
+  .brand h1{margin:0;font-size:1.25rem;letter-spacing:.2px}nav{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}
+  nav button{appearance:none;border:1px solid #222838;color:var(--text);background:#121620;padding:10px 14px;border-radius:10px;cursor:pointer;transition:.2s ease;font-weight:600;letter-spacing:.2px}
+  nav button[aria-current="page"],nav button:hover{border-color:#2c3347;background:#171c28;box-shadow:inset 0 0 0 1px #2f3750,0 6px 20px rgba(0,0,0,.25)}
+  main{padding:24px 0 60px}.grid{display:grid;gap:16px}@media(min-width:900px){.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:repeat(3,1fr)}}
+  .card{background:linear-gradient(180deg,#151a24,#121620);border:1px solid #1c2130;border-radius:var(--radius);padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .card h3{margin:.25rem 0 1rem;font-size:1.05rem}label{display:block;font-size:.9rem;color:var(--muted);margin-bottom:6px}
+  input[type="text"],input[type="date"],input[type="datetime-local"],input[type="number"],textarea,select{width:100%;background:#0f131c;border:1px solid #232a3b;border-radius:10px;color:var(--text);padding:10px 12px;outline:none;transition:.15s ease}
+  textarea{min-height:110px;resize:vertical}input:focus,textarea:focus,select:focus{border-color:#354063;box-shadow:var(--ring)}
+  .row{display:flex;gap:10px}.row>*{flex:1}.btn{appearance:none;border:1px solid #222838;background:#101520;color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700;letter-spacing:.2px;transition:.15s ease;display:inline-flex;align-items:center;gap:8px}
+  .btn:hover{background:#171c28;border-color:#2a3147}.btn.primary{background:linear-gradient(180deg,#f4a261,#e58d4d);color:#111;border:none;box-shadow:0 10px 24px rgba(244,162,97,.25)}.btn.ghost{background:transparent}
+  .btn.danger{background:#2a1120;border:1px solid #5a2144;color:#ffd6e4}.mini{font-size:.83rem;padding:8px 10px}.muted{color:var(--muted)}.empty{opacity:.7;text-align:center;padding:20px}
+  .list{display:grid;gap:10px}.item{display:flex;gap:14px;align-items:flex-start;background:#0f131b;border:1px solid #232a3b;border-radius:12px;padding:12px}
+  .item img.thumb{width:90px;height:90px;object-fit:cover;border-radius:10px;background:#0b0f16;border:1px solid #1d2332}
+  .pill{border:1px solid #26314a;background:#121827;padding:8px 12px;border-radius:999px;display:inline-flex;gap:8px;align-items:center;font-weight:700}
+  .tag{font-size:.72rem;padding:4px 8px;border-radius:999px;border:1px solid #2a3146;color:#a0abbd}.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:750px){.gallery{grid-template-columns:repeat(4,1fr)}}
+  .gallery img{width:100%;border-radius:12px;aspect-ratio:1/1;object-fit:cover;border:1px solid #1c2232;background:#0c1018}.footer-tip{position:fixed;left:50%;transform:translateX(-50%);bottom:12px;background:#121826;border:1px solid #1e2638;padding:8px 12px;border-radius:999px;font-size:.85rem;color:#94a0b8}
+  .hr{height:1px;background:linear-gradient(90deg,transparent,#24304a,transparent);margin:14px 0}.row-wrap{display:flex;flex-wrap:wrap;gap:8px}.hidden{display:none !important}
+  .hero{display:grid;gap:14px;grid-template-columns:80px 1fr;align-items:center}.hero img{width:80px;height:80px;object-fit:cover;border-radius:16px;border:2px solid #2a334a;background:#0c1118}
+  .small{font-size:.83rem}
+  .ai-box{margin-top:10px;border:1px dashed #2a334a;padding:10px;border-radius:12px;background:#111827}
+  .idea-card{background:#0f131b;border:1px solid #232a3b;border-radius:12px;padding:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <img class="logo" src="icons/icon-192.png" alt="Milo icon" />
+      <h1>Milo’s Lovebook <span class="muted">• a tiny home for big pug love</span></h1>
+    </div>
+    <nav aria-label="sections">
+      <button data-tab="home" aria-current="page">Home</button>
+      <button data-tab="journal">Journal</button>
+      <button data-tab="health">Health</button>
+      <button data-tab="ideas">Ideas</button>
+      <button data-tab="gallery">Gallery</button>
+      <button data-tab="backup">Backup</button>
+      <button id="installBtn" class="btn mini hidden">Install app</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- HOME (unchanged from earlier full version) -->
+  <section id="tab-home" class="grid grid-2">
+    <div class="card">
+      <div class="hero">
+        <img id="heroPhoto" alt="Milo's photo preview" src="" />
+        <div>
+          <div class="row" style="align-items:center; gap:8px">
+            <h2 style="margin:.2rem 0" id="petNameHeading">Milo</h2>
+            <span class="tag">Pug</span>
+          </div>
+          <div class="row-wrap muted small">
+            <span id="lastWeight">No weight logged yet</span><span aria-hidden="true">•</span><span id="nextEvent">No upcoming health to-dos</span>
+          </div>
+        </div>
+      </div>
+      <div class="hr"></div>
+      <div class="row">
+        <label for="photoInput" class="btn mini">Upload Milo Photo</label><input id="photoInput" type="file" accept="image/*" style="display:none">
+        <input type="text" id="petNameInput" placeholder="Pet name" aria-label="Pet name"><button class="btn mini" id="saveSettings">Save</button>
+      </div>
+      <p class="muted small">Everything saves in your browser only (private & offline). Export a backup anytime.</p>
+    </div>
+
+    <div class="card">
+      <h3>Idea of the Day</h3>
+      <div id="ideaOfDay" class="pill">Loading a fresh idea…</div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn mini" id="shuffleIdea">Shuffle</button>
+        <button class="btn mini" id="addIdeaToTodo">Add to Health To-Dos</button>
+      </div>
+      <p class="muted small">Ideas are pug-safe; adapt to Milo’s age, energy, weather, and vet guidance.</p>
+    </div>
+
+    <div class="card">
+      <h3>Quick Journal</h3>
+      <div class="row"><input type="date" id="qjDate"><input type="file" id="qjPhoto" accept="image/*"></div>
+      <textarea id="qjText" placeholder="Today Milo…"></textarea>
+      <div class="row"><button class="btn primary" id="qjSave">Save Moment</button><button class="btn ghost" id="qjClear">Clear</button></div>
+    </div>
+
+    <div class="card">
+      <h3>Goals</h3>
+      <div class="list" id="goalList"></div><div class="hr"></div>
+      <div class="row"><input type="text" id="goalTitle" placeholder="Learn a new trick"><input type="number" id="goalTarget" placeholder="Target (e.g., 5 sessions)"></div>
+      <div class="row"><button class="btn mini" id="addGoal">Add Goal</button><button class="btn mini" id="nudgeGoal">+1 Progress</button></div>
+      <p class="muted small">Create a tiny goal. Tap +1 to nudge progress.</p>
+    </div>
+  </section>
+
+  <!-- JOURNAL -->
+  <section id="tab-journal" class="hidden">
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>New Entry</h3>
+        <div class="row"><input type="date" id="jDate"><input type="file" id="jPhoto" accept="image/*"></div>
+        <textarea id="jText" placeholder="Write a little love note about Milo…"></textarea>
+        <div class="row"><input type="text" id="jTags" placeholder="Tags (comma separated)"><label class="row" style="align-items:center;gap:8px"><input type="checkbox" id="jFav"> Favorite</label></div>
+        <div class="row"><button class="btn primary" id="jSave">Add to Journal</button><button class="btn ghost" id="jClear">Clear</button></div>
+      </div>
+      <div class="card">
+        <h3>Search & Filter</h3>
+        <div class="row"><input type="text" id="jSearch" placeholder="Search words or tags"><select id="jFilterFav"><option value="all">All</option><option value="fav">Favorites only</option></select></div>
+        <p class="muted small">Export your journal in Backup → Export JSON.</p>
+      </div>
+    </div>
+    <div class="card"><h3>Entries</h3><div id="journalList" class="list"></div><p id="journalEmpty" class="empty hidden">No entries yet — the story starts with your first note ✨</p></div>
+  </section>
+
+  <!-- HEALTH -->
+  <section id="tab-health" class="hidden">
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Weight Log</h3>
+        <div class="row"><input type="date" id="wDate"><input type="number" id="wLbs" placeholder="lbs"><button class="btn mini" id="wAdd">Add</button></div>
+        <div id="weightStats" class="row-wrap" style="margin-top:10px"></div><div class="hr"></div><div id="weightList" class="list"></div>
+      </div>
+      <div class="card">
+        <h3>Health To-Dos & Appointments</h3>
+        <div class="row"><input type="text" id="todoTitle" placeholder="e.g., Vet checkup • Heartworm pill"></div>
+        <div class="row"><input type="datetime-local" id="todoWhen"><input type="text" id="todoNotes" placeholder="Notes (clinic, dosage, etc.)"><button class="btn mini" id="todoAdd">Add</button></div>
+        <div class="hr"></div><div id="todoList" class="list"></div>
+        <div class="row" style="margin-top:10px"><button class="btn mini" id="exportICS">Export .ics</button><button class="btn mini" id="clearPastTodos">Clear past</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IDEAS (with AI) -->
+  <section id="tab-ideas" class="hidden">
+    <div class="card">
+      <h3>Enrichment Deck</h3>
+      <div class="row"><select id="ideaFilter"><option value="all">All</option><option value="indoors">Indoors</option><option value="outdoors">Outdoors</option><option value="brain">Brain games</option><option value="calm">Calm</option><option value="energy">Energy</option></select><button class="btn mini" id="ideaRandom">Deal a random idea</button></div>
+      <div class="ai-box">
+        <div class="row"><input id="ideaQuery" placeholder="e.g., cozy rainy day ideas"><button class="btn mini" id="ideaAI">Generate</button></div>
+        <div id="ideaAIResults" class="grid grid-3" style="margin-top:10px"></div>
+        <p class="muted small">This uses a private, server-side key (kept safe on Netlify) to fetch new, personalized ideas for Milo.</p>
+      </div>
+    </div>
+    <div id="ideaList" class="grid grid-3"></div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="tab-gallery" class="hidden">
+    <div class="card">
+      <h3>Photos</h3>
+      <div class="row" style="align-items:center"><input type="file" id="gUpload" accept="image/*" multiple><input type="text" id="gCaption" placeholder="Optional caption for next upload"></div>
+      <p class="muted small">Photos are compressed and saved locally so they load fast. Export a backup periodically.</p>
+    </div>
+    <div id="gallery" class="gallery"></div><p id="galleryEmpty" class="empty">No photos yet — upload your first Milo pic 📸</p>
+  </section>
+
+  <!-- BACKUP -->
+  <section id="tab-backup" class="hidden">
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Backup & Restore</h3>
+        <div class="row"><button class="btn" id="exportJSON">Export JSON</button><input type="file" id="importJSON" accept="application/json"></div>
+        <p class="muted small">Exports a human-readable JSON file with journal, weight logs, to-dos, gallery, and settings.</p>
+        <div class="hr"></div><button class="btn danger" id="hardReset">Erase Everything</button><p class="muted small">This wipes local data on this browser only. Consider exporting first.</p>
+      </div>
+      <div class="card">
+        <h3>Printables</h3>
+        <p>Create a “Milo Zine” from favorite journal entries — formatted for printing.</p>
+        <button class="btn mini" id="printZine">Print favorites</button>
+        <p class="muted small">Use your browser’s Print to PDF if you want a digital keepsake.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="footer-tip">Pro tip: add this page to your phone’s Home Screen for a one-tap Milo hub.</div>
+
+<script>
+(function(){
+  const $=(s,c=document)=>c.querySelector(s), $$=(s,c=document)=>Array.from(c.querySelectorAll(s)), byId=id=>document.getElementById(id);
+  const fmtDate=iso=>new Date(iso).toLocaleDateString([], {year:'numeric',month:'short',day:'numeric'});
+  const fmtDateTime=iso=>new Date(iso).toLocaleString([], {year:'numeric',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+  const storeKey='miloLovebook.v2';
+  const blank=()=>({settings:{petName:'Milo',photo:'',species:'Pug'},journal:[],health:{weight:[],todos:[]},gallery:[],goals:[],lastIdeaDate:''});
+  let data=load(); function load(){try{const raw=localStorage.getItem(storeKey);return raw?JSON.parse(raw):blank();}catch(e){return blank();}} function save(){localStorage.setItem(storeKey, JSON.stringify(data));}
+
+  const tabs=['home','journal','health','ideas','gallery','backup']; $$('nav button').forEach(b=>b.dataset.tab&&b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+  function switchTab(tab){ tabs.forEach(t=>{ byId('tab-'+t).classList.toggle('hidden',t!==tab); $$('nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===tab?'page':'false')); });
+    if(tab==='gallery') renderGallery(); if(tab==='journal') renderJournal(); if(tab==='health'){renderWeights();renderTodos();} if(tab==='ideas') renderIdeas(); }
+
+  function placeholder(){ const svg=encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><rect width='200' height='200' fill='#0c1118'/><text x='100' y='110' text-anchor='middle' font-size='52' font-family='Apple Color Emoji, Segoe UI Emoji'>🐾</text></svg>`); return "data:image/svg+xml;charset=utf-8,"+svg; }
+  function renderHome(){ byId('petNameInput').value=data.settings.petName||'Milo'; $('#petNameHeading').textContent=data.settings.petName||'Milo';
+    const hero=byId('heroPhoto'); hero.src=data.settings.photo||placeholder();
+    const last=[...data.health.weight].sort((a,b)=>b.date.localeCompare(a.date))[0];
+    byId('lastWeight').textContent=last?('Last weight: '+last.lbs+' lbs on '+fmtDate(last.date)):'No weight logged yet';
+    const upcoming=data.health.todos.filter(t=>!t.done && new Date(t.when)>new Date()).sort((a,b)=>new Date(a.when)-new Date(b.when))[0];
+    byId('nextEvent').textContent=upcoming?('Next: '+upcoming.title+' • '+fmtDateTime(upcoming.when)):'No upcoming health to-dos'; }
+  byId('saveSettings').addEventListener('click',()=>{ data.settings.petName=byId('petNameInput').value.trim()||'Milo'; save(); renderHome(); });
+  byId('photoInput').addEventListener('change',async(e)=>{ const f=e.target.files?.[0]; if(!f) return; const dataUrl=await shrinkImage(f, 640); data.settings.photo=dataUrl; save(); renderHome(); });
+
+  const baseIdeas=[
+    {title:'Snuffle-Mat Treasure Hunt', tags:['indoors','brain','calm'], steps:'Scatter kibble in a towel or snuffle mat. Start easy, add layers.'},
+    {title:'Pug-Size Agility', tags:['indoors','outdoors','energy'], steps:'Tiny jumps with books + a broom; add a cardboard tunnel.'},
+    {title:'Lick-It Palette', tags:['indoors','calm'], steps:'Spread plain yogurt or pumpkin on a lick mat or silicone trivet.'},
+    {title:'Name-That-Toy', tags:['indoors','brain'], steps:'Teach two toy names. Ask “Where’s Pig?” Treat when correct.'},
+    {title:'Scent Walk', tags:['outdoors','calm'], steps:'A slow nose-led walk for 10–15 min. Let Milo choose the route.'},
+    {title:'Ice Cube Archaeology', tags:['indoors','brain'], steps:'Freeze a toy/kibble in water. Supervise while he investigates.'},
+    {title:'Two-Toy Tug Rules', tags:['indoors','energy'], steps:'Teach “take it” & “drop.” Use two tugs to keep it balanced.'},
+    {title:'Calm Massage', tags:['indoors','calm'], steps:'Gentle ear rubs and shoulder circles. Stop while it’s still nice.'},
+    {title:'Trick: Chin Rest', tags:['indoors','brain','calm'], steps:'Lure chin to palm, mark/treat. Great for cooperative care.'},
+    {title:'Sniff Boxes', tags:['indoors','brain'], steps:'Hide kibble under one of three cups. Shuffle slowly. Let him pick.'},
+    {title:'Park Bench Picnic', tags:['outdoors','calm'], steps:'Short outing, people-watch, treat for calm. Keep it cozy.'},
+    {title:'Paw-dicure Warmup', tags:['indoors','calm'], steps:'Touch paw → treat. Hold paw → treat. Introduce clipper slowly.'}
+  ];
+  function seedRandomFromDate(d){ const s=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate(); let x=Math.sin(s)*10000; return ()=>{ x=Math.sin(x)*10000; return x-Math.floor(x); }; }
+  function pickIdeaFor(date=new Date()){ const rnd=seedRandomFromDate(date); return baseIdeas[Math.floor(rnd()*baseIdeas.length)]; }
+  function showIdeaOfDay(forceShuffle=false){ let idea=pickIdeaFor(new Date()); if(forceShuffle){ idea=baseIdeas[Math.floor(Math.random()*baseIdeas.length)]; }
+    const el=byId('ideaOfDay'); el.innerHTML=`<strong>${idea.title}</strong> • ${idea.tags.join(' • ')}<br><span class="small">${idea.steps}</span>`; el.dataset.idea=JSON.stringify(idea); }
+  byId('shuffleIdea').addEventListener('click',()=>showIdeaOfDay(true));
+  byId('addIdeaToTodo').addEventListener('click',()=>{ const raw=byId('ideaOfDay').dataset.idea; if(!raw) return; const idea=JSON.parse(raw);
+    const when=new Date(); when.setDate(when.getDate()+1); when.setHours(9,0,0,0);
+    data.health.todos.push({id:crypto.randomUUID(), title:idea.title, when: when.toISOString(), notes:'Auto-added from Idea of the Day', done:false}); save(); renderTodos(); alert('Added for tomorrow 9:00 AM.'); });
+
+  function renderGoals(){ const list=byId('goalList'); list.innerHTML=''; if(data.goals.length===0){ list.innerHTML='<div class="empty">No goals yet — add a tiny one.</div>'; return; }
+    data.goals.forEach(g=>{ const pct=Math.min(100, Math.round((g.progress/(g.target||1))*100)); const item=document.createElement('div'); item.className='item';
+      item.innerHTML=`<div style="flex:1"><div class="row-wrap" style="justify-content:space-between"><strong>${g.title}</strong><span class="muted small">${g.progress}/${g.target}</span></div>
+      <div style="height:10px;background:#0e1420;border:1px solid #232b3e;border-radius:999px;overflow:hidden;margin-top:8px"><span style="display:block;height:100%;background:linear-gradient(90deg,var(--accent),#ffd166);width:${pct}%"></span></div></div>
+      <div class="row-wrap" style="flex-direction:column; gap:8px"><button class="btn mini" data-act="inc" data-id="${g.id}">+1</button><button class="btn mini" data-act="del" data-id="${g.id}">✕</button></div>`; list.appendChild(item); });
+    list.addEventListener('click',(e)=>{ const b=e.target.closest('button'); if(!b) return; const id=b.dataset.id; const act=b.dataset.act; const g=data.goals.find(x=>x.id===id); if(!g) return;
+      if(act==='inc'){ g.progress=Math.min(g.target, (g.progress||0)+1); } if(act==='del'){ data.goals=data.goals.filter(x=>x.id!==id); } save(); renderGoals(); }, {once:true}); }
+  byId('addGoal').addEventListener('click',()=>{ const title=byId('goalTitle').value.trim(); const target=parseInt(byId('goalTarget').value||'0',10); if(!title||!target){ alert('Add a title and target number'); return; }
+    data.goals.push({id:crypto.randomUUID(), title, target:Math.max(1,target), progress:0}); save(); byId('goalTitle').value=''; byId('goalTarget').value=''; renderGoals(); });
+  byId('nudgeGoal').addEventListener('click',()=>{ if(!data.goals.length) return alert('Create a goal first'); data.goals[0].progress=Math.min(data.goals[0].target,(data.goals[0].progress||0)+1); save(); renderGoals(); });
+
+  function renderJournal(){ const list=byId('journalList'); const empty=byId('journalEmpty'); list.innerHTML=''; let entries=[...data.journal].sort((a,b)=>b.date.localeCompare(a.date));
+    const q=byId('jSearch').value.trim().toLowerCase(); const favOnly=byId('jFilterFav').value==='fav'; if(q){ entries=entries.filter(e=> (e.text?.toLowerCase().includes(q) || (e.tags||[]).join(',').toLowerCase().includes(q))); } if(favOnly){ entries=entries.filter(e=>e.fav); }
+    empty.classList.toggle('hidden', entries.length>0);
+    entries.forEach(e=>{ const item=document.createElement('div'); item.className='item'; const img=e.photo?`<img class="thumb" alt="" src="${e.photo}">`:`<div class="thumb" style="width:90px;height:90px;border-radius:10px;background:#0b0f16;border:1px solid #1d2332;display:grid;place-items:center">🐶</div>`;
+      item.innerHTML=`${img}<div style="flex:1"><div class="row-wrap" style="justify-content:space-between"><strong>${fmtDate(e.date)}</strong>${e.fav?'<span class="pill">★ Favorite</span>':''}</div><p style="margin:.25rem 0 .5rem">${escapeHtml(e.text||'')}</p><div class="row-wrap">${(e.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div></div>`; list.appendChild(item); }); }
+  byId('jSave').addEventListener('click', async ()=>{ const date=byId('jDate').value||new Date().toISOString().slice(0,10); const text=byId('jText').value.trim(); const tags=byId('jTags').value.split(',').map(x=>x.trim()).filter(Boolean);
+    const fav=byId('jFav').checked; let photo=''; const f=byId('jPhoto').files?.[0]; if(f) photo=await shrinkImage(f, 1280);
+    data.journal.push({id:crypto.randomUUID(), date, text, tags, fav, photo, createdAt:new Date().toISOString()}); save(); byId('jText').value=''; byId('jTags').value=''; byId('jPhoto').value=''; byId('jFav').checked=false; renderJournal(); });
+  byId('jClear').addEventListener('click',()=>{ byId('jText').value=''; byId('jTags').value=''; byId('jPhoto').value=''; byId('jFav').checked=false; });
+  byId('jSearch').addEventListener('input', renderJournal); byId('jFilterFav').addEventListener('change', renderJournal);
+
+  function renderWeights(){ const list=byId('weightList'); list.innerHTML=''; const rows=[...data.health.weight].sort((a,b)=>b.date.localeCompare(a.date));
+    if(rows.length===0){ list.innerHTML='<div class="empty">No weight yet — log the first one.</div>'; }
+    rows.forEach(w=>{ const item=document.createElement('div'); item.className='item'; item.innerHTML=`<div style="flex:1"><strong>${w.lbs} lbs</strong><div class="muted small">${fmtDate(w.date)}</div></div><button class="btn mini" data-id="${w.date}" data-act="del">✕</button>`; list.appendChild(item); });
+    list.addEventListener('click',(e)=>{ const b=e.target.closest('button'); if(!b) return; if(b.dataset.act==='del'){ data.health.weight=data.health.weight.filter(x=>x.date!==b.dataset.id); save(); renderWeights(); renderHome(); } }, {once:true});
+    const stats=byId('weightStats'); stats.innerHTML=''; if(rows.length){ const latest=rows[0].lbs; const first=rows[rows.length-1].lbs; const diff=(latest-first).toFixed(1); stats.innerHTML=`<span class="pill">Latest <strong>${latest} lbs</strong></span> <span class="pill">Change <strong>${diff} lbs</strong></span>`; } }
+  byId('wAdd').addEventListener('click',()=>{ const date=byId('wDate').value||new Date().toISOString().slice(0,10); const lbs=parseFloat(byId('wLbs').value||'NaN'); if(isNaN(lbs)){ alert('Enter a weight in lbs'); return; } data.health.weight=data.health.weight.filter(x=>x.date!==date);
+    data.health.weight.push({date, lbs:Math.round(lbs*10)/10}); save(); byId('wLbs').value=''; renderWeights(); renderHome(); });
+
+  function renderTodos(){ const list=byId('todoList'); list.innerHTML=''; let items=[...data.health.todos].sort((a,b)=>new Date(a.when)-new Date(b.when));
+    if(items.length===0){ list.innerHTML='<div class="empty">Nothing scheduled — add something to remember.</div>'; }
+    items.forEach(t=>{ const soon=new Date(t.when)-new Date()<1000*60*60*24*3; const item=document.createElement('div'); item.className='item';
+      item.innerHTML=`<div style="flex:1"><div class="row-wrap" style="justify-content:space-between"><strong>${escapeHtml(t.title)}</strong>${t.done?'<span class="pill">Done</span>':(soon?'<span class="pill" style="border-color:#ffd166;color:#ffe9ab">Soon</span>':'')}</div><div class="muted small">${fmtDateTime(t.when)} ${t.notes?('• '+escapeHtml(t.notes)) : ''}</div></div>
+      <div class="row-wrap" style="flex-direction:column; gap:8px"><button class="btn mini" data-act="toggle" data-id="${t.id}">${t.done?'Undo':'Done'}</button><button class="btn mini" data-act="del" data-id="${t.id}">✕</button></div>`; list.appendChild(item); });
+    list.addEventListener('click',(e)=>{ const b=e.target.closest('button'); if(!b) return; const id=b.dataset.id; const act=b.dataset.act; const idx=data.health.todos.findIndex(x=>x.id===id); if(idx<0) return;
+      if(act==='toggle'){ data.health.todos[idx].done=!data.health.todos[idx].done; } if(act==='del'){ data.health.todos.splice(idx,1); } save(); renderTodos(); renderHome(); }, {once:true}); }
+  byId('todoAdd').addEventListener('click',()=>{ const title=byId('todoTitle').value.trim(); const when=byId('todoWhen').value; const notes=byId('todoNotes').value.trim();
+    if(!title || !when){ alert('Add a title and date/time'); return; } data.health.todos.push({id:crypto.randomUUID(), title, when:new Date(when).toISOString(), notes, done:false}); save(); byId('todoTitle').value=''; byId('todoWhen').value=''; byId('todoNotes').value=''; renderTodos(); renderHome(); });
+  byId('clearPastTodos').addEventListener('click',()=>{ const now=new Date(); data.health.todos=data.health.todos.filter(t=>new Date(t.when)>=now || t.done===false); save(); renderTodos(); });
+  byId('exportICS').addEventListener('click',()=>{ const upcoming=data.health.todos.filter(t=>!t.done); if(!upcoming.length){ alert('No upcoming to export'); return; } const ics=buildICS(upcoming);
+    const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=(data.settings.petName||'Milo')+'_health_todos.ics'; document.body.appendChild(a); a.click(); URL.revokeObjectURL(url); a.remove(); });
+  function buildICS(events){ const uid=()=> (crypto.randomUUID()+'@milo-lovebook'); const dt=iso=>new Date(iso).toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+    let out='BEGIN:VCALENDAR\\nVERSION:2.0\\nPRODID:-//Milo Lovebook//EN\\nCALSCALE:GREGORIAN\\nMETHOD:PUBLISH\\n'; events.forEach(ev=>{ out+='BEGIN:VEVENT\\n'; out+='UID:'+uid()+'\\n'; out+='DTSTAMP:'+dt(new Date().toISOString())+'\\n'; out+='DTSTART:'+dt(ev.when)+'\\n'; out+='DTEND:'+dt(new Date(new Date(ev.when).getTime()+60*60*1000).toISOString())+'\\n'; out+='SUMMARY:'+escapeICS(ev.title)+'\\n'; if(ev.notes) out+='DESCRIPTION:'+escapeICS(ev.notes)+'\\n'; out+='END:VEVENT\\n'; }); out+='END:VCALENDAR'; return out; }
+  function escapeICS(s){ return (s||'').replace(/\\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;'); }
+
+  // Render Ideas
+  function renderIdeas(){ const filter=byId('ideaFilter').value; const list=byId('ideaList'); list.innerHTML=''; let ideas=baseIdeas; if(filter!=='all') ideas=ideas.filter(i=>i.tags.includes(filter));
+    ideas.forEach(i=>{ const card=document.createElement('div'); card.className='card'; card.innerHTML=`<div class="row-wrap" style="justify-content:space-between"><strong>${i.title}</strong><div>${i.tags.map(t=>`<span class="tag">${t}</span>`).join(' ')}</div></div><p class="small muted" style="margin:.5rem 0 1rem">${i.steps}</p><div class="row"><button class="btn mini" data-act="plan">Add to To-Dos</button></div>`;
+      card.querySelector('[data-act="plan"]').addEventListener('click',()=>{ const when=new Date(); when.setDate(when.getDate()+1); when.setHours(10,0,0,0); data.health.todos.push({id:crypto.randomUUID(), title:i.title, when:when.toISOString(), notes:'From Ideas', done:false}); save(); alert('Added for tomorrow 10:00 AM.'); }); list.appendChild(card); }); }
+  byId('ideaFilter').addEventListener('change', renderIdeas); byId('ideaRandom').addEventListener('click',()=>{ showIdeaOfDay(true); });
+
+  // AI Ideas: call Netlify Function
+  byId('ideaAI').addEventListener('click', async ()=>{
+    const q=(byId('ideaQuery').value||'').trim();
+    const results=byId('ideaAIResults'); results.innerHTML='<div class="muted">Thinking…</div>';
+    try{
+      const r=await fetch('/.netlify/functions/ideas',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query:q})});
+      const {ideasText, error, details} = await r.json();
+      if(error){ results.innerHTML = `<div class="muted">Oops: ${error}</div>`; console.warn(details||error); return; }
+      const cards = parseIdeasToCards(ideasText);
+      results.innerHTML = ''; cards.forEach(c=>{
+        const el=document.createElement('div'); el.className='idea-card'; el.innerHTML = `<strong>${c.title}</strong><p class="small muted" style="margin:.5rem 0 0">${c.body}</p><div class="row" style="margin-top:8px"><button class="btn mini">Add to To-Dos</button></div>`;
+        el.querySelector('button').addEventListener('click',()=>{
+          const when = new Date(); when.setDate(when.getDate()+1); when.setHours(11,0,0,0);
+          data.health.todos.push({id:crypto.randomUUID(), title:c.title, when:when.toISOString(), notes:'From AI Ideas', done:false}); save(); alert('Added for tomorrow 11:00 AM.');
+        });
+        results.appendChild(el);
+      });
+    }catch(err){ results.innerHTML='<div class="muted">Network error.</div>'; console.error(err); }
+  });
+  function parseIdeasToCards(txt){
+    // Try to split into 5 ideas of form "1. Title: details" or "• Title — details"
+    const lines = txt.split(/[\r\n]+/).map(l=>l.trim()).filter(Boolean);
+    const items=[];
+    for(const l of lines){
+      // e.g., "1. Snuffle Hunt: Scatter kibble..."
+      const m = l.match(/^\d+\.\s*(.+)$/) || l.match(/^[\-\*•]\s*(.+)$/) || l.match(/^(.*)$/);
+      if(m){ items.push(m[1]); }
+    }
+    // group into title + body
+    const cards = items.map(s=>{
+      const parts = s.split(/[:—-]\s+/);
+      const title = (parts[0]||'Idea').slice(0,60);
+      const body = (parts.slice(1).join(' — ') || s).slice(0,200);
+      return {title, body};
+    }).filter((v,i,a)=> i<5); // limit to 5
+    if(cards.length===0){ return [{title:'New idea', body:txt.slice(0,200)}]; }
+    return cards;
+  }
+
+  function renderGallery(){ const g=byId('gallery'); const empty=byId('galleryEmpty'); g.innerHTML=''; const items=[...data.gallery].sort((a,b)=>new Date(b.date)-new Date(a.date));
+    empty.classList.toggle('hidden', items.length>0); items.forEach(x=>{ const img=document.createElement('img'); img.loading='lazy'; img.alt=x.caption||'Milo photo'; img.src=x.data; img.title=x.caption ? (x.caption + ' — ' + fmtDate(x.date)) : fmtDate(x.date); g.appendChild(img); }); }
+  byId('gUpload').addEventListener('change', async (e)=>{ const files=Array.from(e.target.files||[]); if(!files.length) return; const caption=byId('gCaption').value.trim();
+    for(const f of files){ const dataUrl=await shrinkImage(f, 1280); data.gallery.push({id:crypto.randomUUID(), data:dataUrl, caption, date:new Date().toISOString()}); }
+    save(); byId('gUpload').value=''; byId('gCaption').value=''; renderGallery(); });
+
+  byId('exportJSON').addEventListener('click',()=>{ const blob=new Blob([JSON.stringify(data,null,2)], {type:'application/json;charset=utf-8'});
+    const a=document.createElement('a'); const url=URL.createObjectURL(blob); a.href=url; a.download=(data.settings.petName||'Milo')+'_lovebook_backup.json'; document.body.appendChild(a); a.click(); URL.revokeObjectURL(url); a.remove(); });
+  byId('importJSON').addEventListener('change',async (e)=>{ const file=e.target.files?.[0]; if(!file) return; const text=await file.text();
+    try{ const json=JSON.parse(text); if(!json||!json.settings||!json.journal) throw new Error('Invalid backup file'); data=json; save(); alert('Backup restored!'); renderAll(); }catch(err){ alert('Import failed: '+err.message); } finally { e.target.value=''; } });
+  byId('hardReset').addEventListener('click',()=>{ if(confirm('Erase everything on this browser?')){ data=blank(); save(); renderAll(); alert('All set.'); } });
+  byId('printZine').addEventListener('click',()=>{ const favs=data.journal.filter(e=>e.fav).sort((a,b)=>a.date.localeCompare(b.date)); const win=window.open('','_blank');
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${data.settings.petName} Zine</title>
+      <style>body{font-family:Georgia,ui-serif;margin:40px;color:#222}h1{margin:0 0 10px}.entry{break-inside:avoid;margin-bottom:18px;border-bottom:1px solid #ddd;padding-bottom:10px}.entry img{max-width:100%;border-radius:10px}.muted{color:#666}@media print{.no-print{display:none}}</style></head><body>
+      <button class="no-print" onclick="window.print()">Print</button><h1>${data.settings.petName} — Favorite Moments</h1><div class="muted">Generated ${new Date().toLocaleString()}</div>
+      ${favs.map(e=>`<div class="entry"><h3>${new Date(e.date).toLocaleDateString()}</h3>${e.photo?`<img src="${e.photo}" alt="">`:''}<p>${escapeHtml(e.text||'')}</p><div class="muted">${(e.tags||[]).map(t=>`#${t}`).join(' ')}</div></div>`).join('')}
+      </body></html>`; win.document.write(html); win.document.close(); });
+
+  function escapeHtml(str){ return (str||'').replace(/[&<>\"']/g, s=>({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[s])); }
+  function shrinkImage(file, maxW){ return new Promise((resolve,reject)=>{ const reader=new FileReader(); reader.onload=e=>{ const img=new Image(); img.onload=()=>{
+      const scale=maxW/img.width; const w=Math.min(maxW,img.width); const h=img.height*(img.width>maxW?scale:1); const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+      const ctx=canvas.getContext('2d'); ctx.fillStyle='#0c1118'; ctx.fillRect(0,0,w,h); ctx.drawImage(img,0,0,w,h); canvas.toBlob(b=>{ const r=new FileReader(); r.onload=()=>resolve(r.result); r.readAsDataURL(b); }, 'image/jpeg', 0.82); }; img.onerror=reject; img.src=e.target.result; }; reader.onerror=reject; reader.readAsDataURL(file); }); }
+
+  function renderAll(){ renderHome(); renderGoals(); renderJournal(); renderWeights(); renderTodos(); renderIdeas(); renderGallery(); }
+  const today=new Date().toISOString().slice(0,10); byId('qjDate').value=today; byId('jDate').value=today; byId('wDate').value=today; showIdeaOfDay(false); renderAll();
+  if(location.hash && tabs.includes(location.hash.replace('#',''))) switchTab(location.hash.replace('#','')); else switchTab('home');
+
+  // PWA hooks
+  if('serviceWorker' in navigator){ window.addEventListener('load',()=>{ navigator.serviceWorker.register('./sw.js').catch(()=>{}); }); }
+  let deferredPrompt; const installBtn = document.getElementById('installBtn');
+  window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e; installBtn && installBtn.classList.remove('hidden'); });
+  installBtn && installBtn.addEventListener('click', async ()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; installBtn.classList.add('hidden'); });
+  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent); const isSafari=/^((?!chrome|android).)*safari/i.test(navigator.userAgent); if(isIOS && isSafari){ const tip=document.querySelector('.footer-tip'); if(tip) tip.innerHTML='On iPhone: Share ▸ Add to Home Screen to install Milo’s Lovebook.'; }
+})();
+</script>
+</body>
+</html>
