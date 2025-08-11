@@ -53,3 +53,4 @@ Each idea: a title (4–6 words) + one concise sentence with steps. Avoid unsafe
     };
   }
 };
+
