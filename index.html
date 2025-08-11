@@ -297,7 +297,15 @@
     try{
       const r=await fetch('/.netlify/functions/ideas',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query:q})});
       const {ideasText, error, details} = await r.json();
-      if(error){ results.innerHTML = `<div class="muted">Oops: ${error}</div>`; console.warn(details||error); return; }
+     if (error) {
+  results.innerHTML = `<div class="muted">Oops: ${escapeHtml(error)}
+    <pre style="white-space:pre-wrap;background:#0d121a;border:1px solid #273148;border-radius:8px;padding:8px;margin-top:8px;">
+${escapeHtml(details || "")}
+    </pre>
+  </div>`;
+  return;
+}
+
       const cards = parseIdeasToCards(ideasText);
       results.innerHTML = ''; cards.forEach(c=>{
         const el=document.createElement('div'); el.className='idea-card'; el.innerHTML = `<strong>${c.title}</strong><p class="small muted" style="margin:.5rem 0 0">${c.body}</p><div class="row" style="margin-top:8px"><button class="btn mini">Add to To-Dos</button></div>`;
