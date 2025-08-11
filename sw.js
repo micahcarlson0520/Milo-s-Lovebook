@@ -1,4 +1,4 @@
-const CACHE = 'milo-lovebook-v2';
+const CACHE = 'milo-lovebook-v3';
 const ASSETS = [
   './',
   './index.html',
