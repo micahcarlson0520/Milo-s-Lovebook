@@ -1,5 +1,5 @@
 // /.netlify/functions/ideas
-// Uses native fetch on Node 18+ (no node-fetch needed)
+// Uses native fetch + chat/completions (very compatible) and returns detailed errors to the page.
 
 exports.handler = async (event) => {
   try {
@@ -8,44 +8,53 @@ exports.handler = async (event) => {
       .toString()
       .slice(0, 200);
 
-    const prompt = `You are a positive, safety-first dog trainer writing for a small black pug named Milo.
-Return 5 short enrichment ideas tailored to: "${query}".
-Each idea: a title (4–6 words) + one concise sentence with steps. Avoid unsafe foods or overexertion.`;
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      return {
+        statusCode: 500,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ error: "Missing OPENAI_API_KEY on server" })
+      };
+    }
 
-    const r = await fetch("https://api.openai.com/v1/responses", {
+    const system = "You are a positive, safety-first dog trainer writing for a small black pug named Milo.";
+    const user = `Return 5 short enrichment ideas tailored to: "${query}". Each idea: a title (4–6 words) + one concise sentence with steps. Avoid unsafe foods or overexertion.`;
+
+    const r = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
-        input: prompt
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: user }
+        ],
+        temperature: 0.8
       })
     });
 
+    const text = await r.text(); // read raw text so we can show full error if needed
     if (!r.ok) {
-      const errText = await r.text();
+      console.error("OpenAI API error:", r.status, text);
       return {
         statusCode: r.status,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ error: "OpenAI API error", details: errText })
+        body: JSON.stringify({ error: "OpenAI API error", details: text })
       };
     }
 
-    const data = await r.json();
-    const outputText =
-      data.output_text ||
-      (Array.isArray(data.output) && data.output[0]?.content?.[0]?.text) ||
-      (data.choices && data.choices[0]?.message?.content) ||
-      "No ideas right now.";
-
+    const data = JSON.parse(text);
+    const ideasText = data?.choices?.[0]?.message?.content || "No ideas right now.";
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ideasText: outputText })
+      body: JSON.stringify({ ideasText })
     };
   } catch (e) {
+    console.error("Function failed:", e);
     return {
       statusCode: 500,
       headers: { "Content-Type": "application/json" },
@@ -53,4 +62,3 @@ Each idea: a title (4–6 words) + one concise sentence with steps. Avoid unsafe
     };
   }
 };
-
